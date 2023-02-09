@@ -1,14 +1,18 @@
 package com.example.ahbakken_oblig1.ui.unitconverter
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun UnitConverterScreen(modifier: Modifier, onNavigateToNext: () -> Unit) { //is called in main
@@ -44,6 +48,7 @@ fun ConverterInput() {
         OutlinedTextField(
             value = convertInput,
             onValueChange = { convertInput = it },
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             label = { Text("Volume") }
         )
 
@@ -85,30 +90,45 @@ fun ConverterInput() {
             }
         }
 
+        val scaffoldState: ScaffoldState = rememberScaffoldState()
+        val coroutineScope: CoroutineScope = rememberCoroutineScope()
+        Scaffold() {
+            Button(onClick = {})
+            {
+                Text(text = "Click me!")
+            }
+        }
 
 
-        Button(
+        val snackbarHostState = remember { SnackbarHostState() }
+        val scope = rememberCoroutineScope()
+
+        Button( //convert button
             onClick = {
                 if (imperialUnit in options && !convertInput.isNullOrEmpty() && convertInput.matches(Regex("\\d+")) ){
                     result = unitConverter(convertInput.toInt(), imperialUnit)
+                    inputText = convertInput
+                    convertInput = ""
+                } else {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            "Insert Volume and Imperial Unit"
+                        )
+                    }
                 }
                 focusManager.clearFocus()
-                inputText = convertInput
-                convertInput = ""
                 imperialUnit = ""
-            },
-            modifier = Modifier.padding(top = 24.dp)
+            }
         ) {
-            Text(text = "Convert")
+            Text("Convert")
         }
-        Box() {
-            Text(
-                text = "You have $result liters",
-                modifier = Modifier.padding(24.dp),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        }
+        Text(
+            text = "You have $result liters",
+            modifier = Modifier.padding(24.dp),
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+        )
+
     }
 }
 
