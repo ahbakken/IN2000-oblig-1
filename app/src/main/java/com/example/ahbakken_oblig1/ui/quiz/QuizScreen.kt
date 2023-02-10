@@ -16,28 +16,30 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.ahbakken_oblig1.R
 
 
 @Composable
 fun QuizScreen(modifier: Modifier) { //is called in main
     var points by remember { mutableStateOf(0) }
-    var enabledButton by remember { mutableStateOf(true) }
-    val question1 = Question(stringResource(R.string.q1), false)
-    val question2 = Question(stringResource(R.string.q2), true)
-    val question3 = Question(stringResource(R.string.q3), false)
-    val questionList = listOf<Question>(question1, question2, question3)
-    val questionState= QuizUiState(questionList)
-    var question by remember { mutableStateOf(questionState.getQuestion()) }
+    var counter by remember { mutableStateOf(0) }
+    var enabled by remember { mutableStateOf(true) }
+
+    val firstQuestion = Question(stringResource(R.string.q1), false)
+    val secondQuestion = Question(stringResource(R.string.q2), true)
+    val lastQuestion = Question(stringResource(R.string.q3), false)
+
+    var question by remember { mutableStateOf( firstQuestion ) }
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(start = 8.dp, end = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         Text(
-            text = question,
-            textAlign = TextAlign.Center
+            text = question.question,
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp,
         )
         
         Row {
@@ -52,37 +54,41 @@ fun QuizScreen(modifier: Modifier) { //is called in main
 
             Button ( //TRUE BUTTON
                 modifier = Modifier.padding(20.dp),
-                enabled = enabledButton,
+                enabled = enabled,
                 onClick = {
-                    if (questionState.getAnswer()) { //if true
-                        points++
-                    }
-                    questionState.increaseQuestionNumber()
-                    if (questionState.questions.size == questionState.getQuestionNumber()) {
-                        enabledButton = false
+                    if (question == lastQuestion) {
+                        enabled = false
                     } else {
-                        question = questionState.getQuestion()
+                        if (question.truthOrLie) { //if false
+                            points++
+                        }
+                        question = when (counter) {
+                            0 -> secondQuestion
+                            else -> {lastQuestion}
+                        }
                     }
-
                 },
                 colors = trueButtonColor
             ) {
                 Text(text = "True")
             }
 
+
             Button(//FALSE BUTTON
                 modifier = Modifier.padding(20.dp),
+                enabled = enabled,
                 onClick = {
-                    if (!questionState.getAnswer()) { //if false
-                        points++
-                    }
-                    questionState.increaseQuestionNumber()
-                    if (questionState.questions.size == questionState.getQuestionNumber()) {
-                        enabledButton = false
+                    if (question == lastQuestion) {
+                        enabled = false
                     } else {
-                        question = questionState.getQuestion()
+                        if (question.truthOrLie) { //if false
+                            points++
+                        }
+                        question = when (counter) {
+                            0 -> secondQuestion
+                            else -> {lastQuestion}
+                        }
                     }
-
                 },
                 colors = falseButtonColor
 
@@ -90,7 +96,7 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                 Text(text = "False")
             }
         }
-        Text(text = "You have $points points.")
+        Text(text = "You have $points points.}")
 
     }
     Column(
@@ -101,10 +107,10 @@ fun QuizScreen(modifier: Modifier) { //is called in main
         Button(
             modifier = Modifier,
             onClick = {
-                points = 0;
-                questionState.resetQuiz();
-                enabledButton = true
-                question = questionState.getQuestion()
+                points = 0
+                currentQuestion = 0
+                enabled = true
+                question = questionList[currentQuestion].question
             }
         ) {
             Text(text = "Restart quiz")
@@ -112,26 +118,5 @@ fun QuizScreen(modifier: Modifier) { //is called in main
     }
 }
 
-data class QuizUiState( val questions: List<Question> ) {
-    private var questionNumber: Int = 0
-    fun increaseQuestionNumber() {
-        if (questionNumber <= questions.size) {
-            questionNumber++
-        }
-
-    }
-    fun getQuestionNumber(): Int {
-        return questionNumber
-    }
-    fun getQuestion(): String {
-        return questions[questionNumber].question
-    }
-    fun getAnswer(): Boolean {
-        return questions[questionNumber].truthOrLie
-    }
-    fun resetQuiz() {
-        questionNumber = 0
-    }
-}
 
 data class Question(val question: String, val truthOrLie: Boolean)

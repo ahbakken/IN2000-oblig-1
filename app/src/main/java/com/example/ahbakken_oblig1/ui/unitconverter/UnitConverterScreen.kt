@@ -11,7 +11,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,7 +37,6 @@ fun ConverterInput() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
 
         var convertInput by remember { mutableStateOf("") }
         var result by remember { mutableStateOf(0.00) }
@@ -74,7 +72,7 @@ fun ConverterInput() {
             if (filteringOptions.isNotEmpty()) {
                 ExposedDropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false },
+                    onDismissRequest = { expanded = !expanded },
                 ) {
                     filteringOptions.forEach { selectionOption ->
                         DropdownMenuItem(
@@ -82,55 +80,57 @@ fun ConverterInput() {
                             onClick = {
                                 imperialUnit = selectionOption
                                 expanded = false
+                                focusManager.clearFocus()
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                         )
                     }
                 }
             }
-        }
+        } //dropdown menu end
 
-        val scaffoldState: ScaffoldState = rememberScaffoldState()
-        val coroutineScope: CoroutineScope = rememberCoroutineScope()
-        Scaffold() {
-            Button(onClick = {})
-            {
-                Text(text = "Click me!")
-            }
-        }
 
 
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
-
-        Button( //convert button
-            onClick = {
-                if (imperialUnit in options && !convertInput.isNullOrEmpty() && convertInput.matches(Regex("\\d+")) ){
-                    result = unitConverter(convertInput.toInt(), imperialUnit)
-                    inputText = convertInput
-                    convertInput = ""
-                } else {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            "Insert Volume and Imperial Unit"
-                        )
-                    }
-                }
-                focusManager.clearFocus()
-                imperialUnit = ""
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            floatingActionButton = {
+                Button(
+                    onClick = {
+                        if (imperialUnit in options && !convertInput.isNullOrEmpty() && convertInput.matches(Regex("\\d+")) )
+                        {
+                            result = unitConverter(convertInput.toInt(), imperialUnit)
+                            inputText = convertInput
+                            convertInput = ""
+                        }
+                // show snack-bar as a suspend function
+                        else {
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    "Insert Volume and Imperial Unit"
+                                )
+                            }
+                        }
+                        focusManager.clearFocus()
+                        imperialUnit = ""
+                    },
+                    modifier = Modifier.padding(bottom = 350.dp),
+                ) { Text("Convert") }
+            },
+            content = { innerPadding ->
+                Text(
+                    modifier = Modifier.padding(innerPadding).fillMaxSize().wrapContentSize(),
+                    text = "You have $result liters",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                )
             }
-        ) {
-            Text("Convert")
-        }
-        Text(
-            text = "You have $result liters",
-            modifier = Modifier.padding(24.dp),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
         )
 
-    }
-}
+    } //Column end
+}//function end
+
 
 fun unitConverter(numberInput: Int, from: String): Double {
 
