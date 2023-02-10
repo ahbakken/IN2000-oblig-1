@@ -1,22 +1,20 @@
 package com.example.ahbakken_oblig1.ui.quiz
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Green
-import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import com.example.ahbakken_oblig1.R
 
 
@@ -43,18 +41,10 @@ fun QuizScreen(modifier: Modifier) { //is called in main
         )
         
         Row {
-            val falseButtonColor = ButtonDefaults.buttonColors(
-                containerColor = Red,
-                contentColor = MaterialTheme.colorScheme.surface
-            )
-            val trueButtonColor = ButtonDefaults.buttonColors(
-                containerColor = Green,
-                contentColor = MaterialTheme.colorScheme.surface
-            )
-
             Button ( //TRUE BUTTON
                 modifier = Modifier.padding(20.dp),
                 enabled = enabled,
+                colors = ButtonDefaults.buttonColors(Color("#00AC05".toColorInt())),
                 onClick = {
                     if (question.truthOrLie) { //if true
                         points++
@@ -68,8 +58,7 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                         }
                         counter++
                     }
-                },
-                colors = trueButtonColor
+                }
             ) {
                 Text(text = "True")
             }
@@ -93,22 +82,28 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                     }
                     counter++
                 },
-                colors = falseButtonColor
+                colors = ButtonDefaults.buttonColors(Color("#AC0500".toColorInt())),
 
             ) {
                 Text(text = "False")
             }
         }
-        Text(text = "You have $points points.")
+        Text(
+            text = "You have $points points.",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
 
     }
     Column(
-        modifier = modifier.padding(bottom = 24.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ){
-        Button(
-            modifier = Modifier,
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable{ },
             onClick = {
                 points = 0
                 counter = 0
@@ -116,7 +111,17 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                 question = firstQuestion
             }
         ) {
-            Text(text = "Restart quiz")
+            Row (
+                modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Restart quiz  ",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Icon(Icons.Rounded.Refresh, contentDescription = "Localized description")
+            }
         }
     }
 }

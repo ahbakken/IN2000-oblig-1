@@ -1,13 +1,11 @@
 package com.example.ahbakken_oblig1.ui.palindrom
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,29 +19,44 @@ import com.example.ahbakken_oblig1.ui.theme.Ahbakken_oblig1Theme
 @Composable
 fun PalindromeScreen(modifier: Modifier, onNavigateToNext: () -> Unit) { //is called in main
     Column (
-        modifier = modifier,
+        modifier = modifier.padding(75.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ){
         PalindromeTest()
     }
     Column(
-        modifier = modifier.padding(bottom = 24.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom,
-    ) {
-        Text(text = "PalindromeScreen")
-        Button(onClick = onNavigateToNext) {
-            Text(text = "To the next screen")
+        verticalArrangement = Arrangement.Bottom
+    ){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable{ },
+            onClick = {
+                onNavigateToNext()
+            }
+        ) {
+            Row (
+                modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "To the next screen  ",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Icon(Icons.Rounded.ArrowForward, contentDescription = "Localized description")
+            }
         }
-
     }
 }
 
 @Composable
 fun PalindromeTest() {
     Column(
-        modifier = Modifier.padding(top = 34.dp),
+        modifier = Modifier.padding(top = 75.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -57,15 +70,15 @@ fun PalindromeTest() {
         val focusManager = LocalFocusManager.current
         var inputText by remember { mutableStateOf("") }
         Button(onClick = {
-            result = palindromeChecker(palindromeTest);
-            focusManager.clearFocus();
-            inputText = palindromeTest;
+            result = palindromeChecker(palindromeTest)
+            focusManager.clearFocus()
+            inputText = palindromeTest
             palindromeTest = ""
         }) {
             Text(text = "Check for palindrome")
         }
         Box (
-            modifier = Modifier.padding(top = 30.dp)
+            modifier = Modifier.padding(top = 16.dp)
                 ) {
             Text(
                 modifier = Modifier.focusable(),

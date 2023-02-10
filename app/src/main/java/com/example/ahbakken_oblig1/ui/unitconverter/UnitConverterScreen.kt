@@ -1,7 +1,10 @@
 package com.example.ahbakken_oblig1.ui.unitconverter
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -9,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -17,13 +21,29 @@ import kotlinx.coroutines.launch
 fun UnitConverterScreen(modifier: Modifier, onNavigateToNext: () -> Unit) { //is called in main
     ConverterInput()
     Column(
-        modifier = modifier.padding(bottom = 24.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
-    ) {
-        Text(text = "UnitConverterScreen")
-        Button(onClick = onNavigateToNext) {
-            Text(text = "To the next screen")
+    ){
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable{ },
+            onClick = {
+                onNavigateToNext()
+            }
+        ) {
+            Row (
+                modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "To the next screen  ",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Icon(Icons.Rounded.ArrowForward, contentDescription = "Localized description")
+            }
         }
     }
 }
@@ -96,7 +116,7 @@ fun ConverterInput() {
             floatingActionButton = {
                 Button(
                     onClick = {
-                        if (imperialUnit in options && !convertInput.isNullOrEmpty() && convertInput.matches(Regex("\\d+")) )
+                        if (imperialUnit in options && convertInput.isEmpty() && convertInput.matches(Regex("\\d+")) )
                         {
                             result = unitConverter(convertInput.toInt(), imperialUnit)
                             inputText = convertInput
