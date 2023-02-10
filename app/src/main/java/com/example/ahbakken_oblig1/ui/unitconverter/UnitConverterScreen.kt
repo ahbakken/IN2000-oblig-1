@@ -51,7 +51,7 @@ fun ConverterInput() {
         )
 
 
-        val options = listOf("Fluid ounce", "Cup", "Gallon", "Hogshead")
+        val options = listOf( "Fluid ounce", "Cup", "Gallon", "Hogshead" )
         var expanded by remember { mutableStateOf(false) }
         var imperialUnit by remember { mutableStateOf("") }
 
@@ -89,8 +89,6 @@ fun ConverterInput() {
             }
         } //dropdown menu end
 
-
-
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
         Scaffold(
@@ -104,7 +102,7 @@ fun ConverterInput() {
                             inputText = convertInput
                             convertInput = ""
                         }
-                // show snack-bar as a suspend function
+                        // show snack-bar as a suspend function
                         else {
                             scope.launch {
                                 snackbarHostState.showSnackbar(

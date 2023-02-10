@@ -56,16 +56,17 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                 modifier = Modifier.padding(20.dp),
                 enabled = enabled,
                 onClick = {
+                    if (question.truthOrLie) { //if true
+                        points++
+                    }
                     if (question == lastQuestion) {
-                        enabled = false
+                        enabled = !enabled
                     } else {
-                        if (question.truthOrLie) { //if false
-                            points++
-                        }
                         question = when (counter) {
                             0 -> secondQuestion
                             else -> {lastQuestion}
                         }
+                        counter++
                     }
                 },
                 colors = trueButtonColor
@@ -78,17 +79,19 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                 modifier = Modifier.padding(20.dp),
                 enabled = enabled,
                 onClick = {
+                    if (!question.truthOrLie) { //if false
+                        points++
+                    }
                     if (question == lastQuestion) {
-                        enabled = false
+                        enabled = !enabled
                     } else {
-                        if (question.truthOrLie) { //if false
-                            points++
-                        }
+
                         question = when (counter) {
                             0 -> secondQuestion
                             else -> {lastQuestion}
                         }
                     }
+                    counter++
                 },
                 colors = falseButtonColor
 
@@ -96,7 +99,7 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                 Text(text = "False")
             }
         }
-        Text(text = "You have $points points.}")
+        Text(text = "You have $points points.")
 
     }
     Column(
@@ -108,9 +111,9 @@ fun QuizScreen(modifier: Modifier) { //is called in main
             modifier = Modifier,
             onClick = {
                 points = 0
-                currentQuestion = 0
+                counter = 0
                 enabled = true
-                question = questionList[currentQuestion].question
+                question = firstQuestion
             }
         ) {
             Text(text = "Restart quiz")
