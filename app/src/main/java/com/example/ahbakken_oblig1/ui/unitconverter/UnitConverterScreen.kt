@@ -28,13 +28,15 @@ fun UnitConverterScreen(modifier: Modifier, onNavigateToNext: () -> Unit) { //is
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable{ },
+                .clickable { },
             onClick = {
                 onNavigateToNext()
             }
         ) {
             Row (
-                modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(15.dp)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
@@ -53,7 +55,7 @@ fun ConverterInput() {
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .padding(34.dp),
+            .padding(top = 50.dp, bottom = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -62,88 +64,92 @@ fun ConverterInput() {
         var result by remember { mutableStateOf(0.00) }
         val focusManager = LocalFocusManager.current
         var inputText by remember { mutableStateOf("") }
-
-        OutlinedTextField(
-            value = convertInput,
-            onValueChange = { convertInput = it },
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-            label = { Text("Volume") }
-        )
-
-
         val options = listOf( "Fluid ounce", "Cup", "Gallon", "Hogshead" )
         var expanded by remember { mutableStateOf(false) }
         var imperialUnit by remember { mutableStateOf("") }
-
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = !expanded },
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            TextField(
-                modifier = Modifier.menuAnchor(),
-                value = imperialUnit,
-                onValueChange = { imperialUnit = it },
-                label = { Text("Choose imperial unit") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            )
-            val filteringOptions = options.filter { it.contains(imperialUnit, ignoreCase = true) }
-            if (filteringOptions.isNotEmpty()) {
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = !expanded },
-                ) {
-                    filteringOptions.forEach { selectionOption ->
-                        DropdownMenuItem(
-                            text = { Text(selectionOption) },
-                            onClick = {
-                                imperialUnit = selectionOption
-                                expanded = false
-                                focusManager.clearFocus()
-                            },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        )
-                    }
-                }
-            }
-        } //dropdown menu end
-
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
-            floatingActionButton = {
-                Button(
-                    onClick = {
-                        if (imperialUnit in options && convertInput.isEmpty() && convertInput.matches(Regex("\\d+")) )
-                        {
-                            result = unitConverter(convertInput.toInt(), imperialUnit)
-                            inputText = convertInput
-                            convertInput = ""
-                        }
-                        // show snack-bar as a suspend function
-                        else {
-                            scope.launch {
-                                snackbarHostState.showSnackbar(
-                                    "Insert Volume and Imperial Unit"
-                                )
+            content = { innerPadding ->
+                Column (
+                    horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                    OutlinedTextField(
+                        value = convertInput,
+                        onValueChange = { convertInput = it },
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                        label = { Text("Volume") }
+                    )
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded },
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        TextField(
+                            modifier = Modifier.menuAnchor(),
+                            value = imperialUnit,
+                            onValueChange = { imperialUnit = it },
+                            label = { Text("Choose imperial unit") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                            readOnly = true,
+                        )
+                        val filteringOptions =
+                            options.filter { it.contains(imperialUnit, ignoreCase = true) }
+                        if (filteringOptions.isNotEmpty()) {
+                            ExposedDropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = !expanded },
+                            ) {
+                                filteringOptions.forEach { selectionOption ->
+                                    DropdownMenuItem(
+                                        text = { Text(selectionOption) },
+                                        onClick = {
+                                            imperialUnit = selectionOption
+                                            expanded = false
+                                            focusManager.clearFocus()
+                                        },
+                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                                    )
+                                }
                             }
                         }
-                        focusManager.clearFocus()
-                        imperialUnit = ""
-                    },
-                    modifier = Modifier.padding(bottom = 350.dp),
-                ) { Text("Convert") }
-            },
-            content = { innerPadding ->
-                Text(
-                    modifier = Modifier.padding(innerPadding).fillMaxSize().wrapContentSize(),
-                    text = "You have $result liters",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+                    } //dropdown menu end
+                    Button(
+                        onClick = {
+                            if (imperialUnit in options && convertInput.isEmpty() && convertInput.matches(Regex("\\d+")) )
+                            {
+                                result = unitConverter(convertInput.toInt(), imperialUnit)
+                                inputText = convertInput
+                                convertInput = ""
+                            }
+                            // show snack-bar as a suspend function
+                            else {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Insert Volume and Imperial Unit",
+                                        withDismissAction = true,
+                                    )
+                                }
+                            }
+                            focusManager.clearFocus()
+                            imperialUnit = ""
+                        },
+                        modifier = Modifier
+                            .padding(innerPadding),
+                    ) { Text("Convert") }
+                    Text(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .wrapContentSize(),
+                        text = "You have $result liters",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            } // content end
         )
 
     } //Column end
