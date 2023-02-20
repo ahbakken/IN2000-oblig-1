@@ -1,7 +1,7 @@
 package com.example.ahbakken_oblig1.ui.unitconverter
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForward
@@ -19,43 +19,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun UnitConverterScreen(modifier: Modifier, onNavigateToNext: () -> Unit) { //is called in main
-    ConverterInput()
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom
-    ){
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { },
-            onClick = {
-                onNavigateToNext()
-            }
-        ) {
-            Row (
-                modifier = Modifier
-                    .padding(15.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "To the next screen  ",
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-                Icon(Icons.Rounded.ArrowForward, contentDescription = "Localized description")
-            }
-        }
-    }
-}
-
-@Composable
-fun ConverterInput() {
     Column (
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 50.dp, bottom = 50.dp),
+            .padding(top = 50.dp, bottom = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -69,12 +36,14 @@ fun ConverterInput() {
         var imperialUnit by remember { mutableStateOf("") }
         val snackbarHostState = remember { SnackbarHostState() }
         val scope = rememberCoroutineScope()
+
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             content = { innerPadding ->
                 Column (
+                    modifier = modifier,
                     horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
+                ) {
                     OutlinedTextField(
                         value = convertInput,
                         onValueChange = { convertInput = it },
@@ -118,7 +87,7 @@ fun ConverterInput() {
                     } //dropdown menu end
                     Button(
                         onClick = {
-                            if (imperialUnit in options && convertInput.isEmpty() && convertInput.matches(Regex("\\d+")) )
+                            if (imperialUnit in options && convertInput.isNotEmpty() && convertInput.matches(Regex("\\d+")) )
                             {
                                 result = unitConverter(convertInput.toInt(), imperialUnit)
                                 inputText = convertInput
@@ -141,8 +110,7 @@ fun ConverterInput() {
                     ) { Text("Convert") }
                     Text(
                         modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
+                            .padding(top = 24.dp)
                             .wrapContentSize(),
                         text = "You have $result liters",
                         fontSize = 24.sp,
@@ -152,12 +120,31 @@ fun ConverterInput() {
             } // content end
         )
 
-    } //Column end
-}//function end
+    } //Column converter end
+    Column (
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(1f),
+            onClick = { onNavigateToNext() },
+            shape = RoundedCornerShape(0.dp),
+        ) {
+            Text(
+                text = "To the next screen  ",
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Icon(Icons.Rounded.ArrowForward, contentDescription = "Localized description")
+        }
+    }
+}
 
 
 fun unitConverter(numberInput: Int, from: String): Double {
-
     val result = when (from) {
         "Fluid ounce" ->  numberInput*0.02957 // fluid ounce
         "Cup" ->  numberInput*0.23659 // cup
