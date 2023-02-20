@@ -1,10 +1,13 @@
 package com.example.ahbakken_oblig1.ui.quiz
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -95,33 +98,28 @@ fun QuizScreen(modifier: Modifier) { //is called in main
         )
 
     }
-    Column(
+    Column (
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
-    ){
-        Card(
+    ) {
+        Button(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable{ },
+                .fillMaxWidth(1f),
             onClick = {
                 points = 0
                 counter = 0
                 enabled = true
-                question = firstQuestion
-            }
+                question = firstQuestion },
+            shape = RoundedCornerShape(0.dp),
         ) {
-            Row (
-                modifier = Modifier.padding(15.dp).fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Restart quiz  ",
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-                Icon(Icons.Rounded.Refresh, contentDescription = "Localized description")
-            }
+            Text(
+                text = "Restart quiz  ",
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Icon(Icons.Rounded.Refresh, contentDescription = "Localized description")
         }
     }
 }
