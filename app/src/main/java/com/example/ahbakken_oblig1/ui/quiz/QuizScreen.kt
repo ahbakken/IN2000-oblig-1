@@ -66,7 +66,6 @@ fun QuizScreen(modifier: Modifier) { //is called in main
                 Text(text = "True")
             }
 
-
             Button(//FALSE BUTTON
                 modifier = Modifier.padding(20.dp),
                 enabled = enabled,
